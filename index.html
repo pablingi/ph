@@ -71,7 +71,7 @@
           aria-controls="view-inbox"
           data-view="inbox"
         >
-          My Returns
+          My Inbox
           <span class="tab-badge" id="inbox-badge" hidden>0</span>
         </button>
       </nav>
@@ -273,6 +273,17 @@
                   </button>
                 </div>
 
+                <div class="action-block" id="final-pdf-block" hidden>
+                  <h3>Signed PDF delivered</h3>
+                  <p class="aside-lede">
+                    Routing is complete. The package was returned to the
+                    submitter as a PDF with every certificate signature applied.
+                  </p>
+                  <button type="button" class="btn primary" id="btn-download-final">
+                    Download signed PDF
+                  </button>
+                </div>
+
                 <ol class="mini-stepper" id="mini-stepper" aria-label="Selected routing chain"></ol>
               </aside>
             </div>
@@ -288,10 +299,10 @@
         >
           <div class="view-header">
             <div>
-              <h1>Returned to Me</h1>
+              <h1>Submitter Inbox</h1>
               <p class="view-lede">
-                Packages sent back by the chain of command. Comments appear here
-                for the original submitter.
+                Returned packages with reviewer comments, plus completed packages
+                delivered back as a fully signed PDF.
               </p>
             </div>
             <div class="summary-strip" id="inbox-summary"></div>
@@ -307,13 +318,46 @@
       </footer>
     </div>
 
+    <dialog id="pdf-sign-dialog" class="pdf-sign-dialog">
+      <div class="pdf-sign-shell">
+        <header class="pdf-sign-header">
+          <div>
+            <h2>Place digital signature</h2>
+            <p id="pdf-sign-subtitle">
+              Drag a box on the PDF where the certificate signature should appear.
+            </p>
+          </div>
+          <button type="button" class="btn ghost" id="btn-pdf-cancel">Close</button>
+        </header>
+
+        <div class="pdf-toolbar">
+          <span id="pdf-tool-hint">Click and drag to draw the signature box.</span>
+          <div class="pdf-toolbar-actions">
+            <button type="button" class="btn compact" id="btn-pdf-clear" disabled>
+              Clear box
+            </button>
+            <button type="button" class="btn primary compact" id="btn-pdf-pin" disabled>
+              Enter PIN to sign
+            </button>
+          </div>
+        </div>
+
+        <div class="pdf-stage-wrap">
+          <div class="pdf-stage" id="pdf-stage">
+            <canvas id="pdf-page-canvas"></canvas>
+            <canvas id="pdf-overlay-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
     <dialog id="pin-dialog" class="pin-dialog">
       <form method="dialog" id="pin-form" class="pin-form">
         <h2>Certificate PIN</h2>
         <p>
           Enter the PIN for
           <strong id="pin-cert-name">selected certificate</strong> to apply a
-          digital signature.
+          digital signature in the selected box.
         </p>
         <label class="stack-label">
           <span>PIN</span>
@@ -339,6 +383,8 @@
       </form>
     </dialog>
 
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

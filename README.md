@@ -7,7 +7,14 @@ Single-page demo for Navy-style form tracking, selectable chain-of-command routi
 - **CO Dashboard** — pending forms with priority, aging, status, and Open
 - **Submit Form** — originator chooses form details and the chain of command
 - **Open Form** — document workspace with review checklists, certificate select + PIN signature, and return-with-comment
-- **My Returns** — submitter inbox with unread badge and reviewer comments
+- **My Inbox** — submitter notifications for return comments and completed signed PDFs
+
+## Signing flow
+
+1. Reviewer opens the form and clicks **Sign with certificate**
+2. PDF opens; drag a box where the signature should appear
+3. Enter certificate PIN
+4. When the last stage signs, the fully endorsed PDF is delivered to the submitter inbox for download
 
 ## Demo notes
 
