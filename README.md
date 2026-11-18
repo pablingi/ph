@@ -1,17 +1,21 @@
 # NAVOPS — Command Routing
 
-Single-page demo for Navy-style commanding officer form tracking and digital routing.
+Single-page demo for Navy-style form tracking, selectable chain-of-command routing, digital certificate signatures, and return-to-submitter workflow.
 
-## Views
+## Tabs
 
-- **Commanding Officer Dashboard** — pending forms table (type, originator, date, priority, days aging)
-- **Routing Chain** — horizontal stepper (OBO → Chief → DEVO → Department Head → XO → CO → COB) with digital certificate checkboxes
+- **CO Dashboard** — pending forms with priority, aging, status, and Open
+- **Submit Form** — originator chooses form details and the chain of command
+- **Open Form** — document workspace with review checklists, certificate select + PIN signature, and return-with-comment
+- **My Returns** — submitter inbox with unread badge and reviewer comments
 
-Sample data only. Not for operational use.
+## Demo notes
+
+- Use **Acting as** to switch between submitter and reviewer stages.
+- Certificate demo PINs are shown in the certificate select list.
+- Sample data only. Not for operational use.
 
 ## Run locally
-
-Open `index.html` in a browser, or serve the folder:
 
 ```bash
 python3 -m http.server 8000 --bind 127.0.0.1

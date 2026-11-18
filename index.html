@@ -25,6 +25,10 @@
         <div class="unit-meta">
           <span class="meta-chip">USS DECISIVE · DDG-81</span>
           <span class="meta-chip soft">UNCLASSIFIED // SAMPLE DATA</span>
+          <label class="role-wrap">
+            <span>Acting as</span>
+            <select id="role-select" aria-label="Acting as role"></select>
+          </label>
         </div>
       </header>
 
@@ -37,17 +41,38 @@
           aria-controls="view-dashboard"
           data-view="dashboard"
         >
-          Commanding Officer Dashboard
+          CO Dashboard
         </button>
         <button
           class="tab"
           role="tab"
-          id="tab-routing"
+          id="tab-submit"
           aria-selected="false"
-          aria-controls="view-routing"
-          data-view="routing"
+          aria-controls="view-submit"
+          data-view="submit"
         >
-          Routing Chain
+          Submit Form
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-workspace"
+          aria-selected="false"
+          aria-controls="view-workspace"
+          data-view="workspace"
+        >
+          Open Form
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-inbox"
+          aria-selected="false"
+          aria-controls="view-inbox"
+          data-view="inbox"
+        >
+          My Returns
+          <span class="tab-badge" id="inbox-badge" hidden>0</span>
         </button>
       </nav>
 
@@ -62,7 +87,8 @@
             <div>
               <h1>Pending Forms</h1>
               <p class="view-lede">
-                Forms awaiting action in the command routing chain.
+                Open a package to review checklists, apply a digital certificate
+                signature, or return it to the submitter.
               </p>
             </div>
             <div class="summary-strip" id="summary-strip"></div>
@@ -77,6 +103,8 @@
                   <th scope="col">Date Submitted</th>
                   <th scope="col">Priority</th>
                   <th scope="col">Days Aging</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Action</th>
                 </tr>
               </thead>
               <tbody id="forms-tbody"></tbody>
@@ -85,33 +113,191 @@
         </section>
 
         <section
-          id="view-routing"
+          id="view-submit"
           class="view"
           role="tabpanel"
-          aria-labelledby="tab-routing"
+          aria-labelledby="tab-submit"
           hidden
         >
           <div class="view-header">
             <div>
-              <h1>Digital Routing Chain</h1>
+              <h1>Submit Package</h1>
               <p class="view-lede">
-                Certificate signatures across the command endorsement path.
+                Choose the chain of command this package must travel before final
+                endorsement.
+              </p>
+            </div>
+          </div>
+
+          <form id="submit-form" class="submit-panel">
+            <div class="field-grid">
+              <label>
+                <span>Form type</span>
+                <select id="submit-form-type" required>
+                  <option value="Special Request / Authorization|NAVPERS 1336/3">
+                    Special Request / Authorization (NAVPERS 1336/3)
+                  </option>
+                  <option value="Leave Request|NAVCOMPT 3065">
+                    Leave Request (NAVCOMPT 3065)
+                  </option>
+                  <option value="Awards Package|OPNAV 1650/3">
+                    Awards Package (OPNAV 1650/3)
+                  </option>
+                  <option value="Eval / FITREP Endorsement|NAVPERS 1616/26">
+                    Eval / FITREP Endorsement (NAVPERS 1616/26)
+                  </option>
+                  <option value="Warfare Qual Board Request|COMNAVSURFOR 1414">
+                    Warfare Qual Board Request
+                  </option>
+                </select>
+              </label>
+              <label>
+                <span>Priority</span>
+                <select id="submit-priority" required>
+                  <option>Routine</option>
+                  <option>Priority</option>
+                  <option>Urgent</option>
+                </select>
+              </label>
+              <label class="span-2">
+                <span>Subject / purpose</span>
+                <input
+                  id="submit-subject"
+                  type="text"
+                  maxlength="120"
+                  placeholder="e.g., Special liberty request for 22–24 NOV"
+                  required
+                />
+              </label>
+              <label class="span-2">
+                <span>Summary for reviewers</span>
+                <textarea
+                  id="submit-summary"
+                  rows="3"
+                  placeholder="Brief justification and supporting details"
+                  required
+                ></textarea>
+              </label>
+            </div>
+
+            <fieldset class="chain-fieldset">
+              <legend>Chain of command</legend>
+              <p class="field-hint">
+                Select every office that must endorse this package, in order.
+                Unselected offices are skipped.
+              </p>
+              <div class="chain-picker" id="chain-picker"></div>
+            </fieldset>
+
+            <div class="form-actions">
+              <button type="submit" class="btn primary">Submit into routing</button>
+              <p class="inline-note" id="submit-note" hidden></p>
+            </div>
+          </form>
+        </section>
+
+        <section
+          id="view-workspace"
+          class="view"
+          role="tabpanel"
+          aria-labelledby="tab-workspace"
+          hidden
+        >
+          <div class="view-header">
+            <div>
+              <h1>Form Workspace</h1>
+              <p class="view-lede">
+                Open the package document, complete review checks, digitally sign
+                with certificate PIN, or send back for correction.
               </p>
             </div>
             <label class="form-select-wrap">
-              <span>Active package</span>
-              <select id="package-select" aria-label="Select routing package"></select>
+              <span>Open package</span>
+              <select id="workspace-select" aria-label="Select package to open"></select>
             </label>
           </div>
 
-          <div class="package-banner" id="package-banner"></div>
+          <div id="workspace-empty" class="empty-state" hidden>
+            No package selected. Open one from the CO Dashboard or choose a package
+            above.
+          </div>
 
-          <ol class="stepper" id="stepper" aria-label="Routing stages"></ol>
+          <div id="workspace-content" hidden>
+            <div class="package-banner" id="workspace-banner"></div>
 
-          <p class="stepper-note">
-            Check a stage to apply a digital certificate signature. Status updates
-            immediately for this sample session.
-          </p>
+            <div class="workspace-layout">
+              <article class="document-panel" id="document-panel" aria-label="Form document"></article>
+
+              <aside class="action-panel">
+                <h2>Reviewer actions</h2>
+                <p class="aside-lede">
+                  Acting as <strong id="acting-role-label"></strong> at stage
+                  <strong id="acting-stage-label"></strong>.
+                </p>
+
+                <div class="action-block">
+                  <h3>Digital certificate signature</h3>
+                  <label class="stack-label">
+                    <span>Certificate identity</span>
+                    <select id="cert-select" aria-label="Select certificate identity"></select>
+                  </label>
+                  <button type="button" class="btn primary" id="btn-sign">
+                    Sign with certificate…
+                  </button>
+                  <p class="inline-note" id="sign-status"></p>
+                </div>
+
+                <div class="action-block return-block">
+                  <h3>Return to submitter</h3>
+                  <label class="stack-label">
+                    <span>Comment (required)</span>
+                    <textarea
+                      id="return-comment"
+                      rows="4"
+                      placeholder="Explain what is missing or incorrect…"
+                    ></textarea>
+                  </label>
+                  <button type="button" class="btn danger" id="btn-return">
+                    Send back for review
+                  </button>
+                </div>
+
+                <div class="action-block" id="resubmit-block" hidden>
+                  <h3>Submitter correction</h3>
+                  <p class="aside-lede">
+                    Address the return comment, update checklist items, then
+                    resubmit into the same chain of command.
+                  </p>
+                  <button type="button" class="btn primary" id="btn-resubmit">
+                    Resubmit into routing
+                  </button>
+                </div>
+
+                <ol class="mini-stepper" id="mini-stepper" aria-label="Selected routing chain"></ol>
+              </aside>
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="view-inbox"
+          class="view"
+          role="tabpanel"
+          aria-labelledby="tab-inbox"
+          hidden
+        >
+          <div class="view-header">
+            <div>
+              <h1>Returned to Me</h1>
+              <p class="view-lede">
+                Packages sent back by the chain of command. Comments appear here
+                for the original submitter.
+              </p>
+            </div>
+            <div class="summary-strip" id="inbox-summary"></div>
+          </div>
+
+          <div id="inbox-list" class="inbox-list"></div>
         </section>
       </main>
 
@@ -120,6 +306,39 @@
         <span>Sample data only — not for operational use</span>
       </footer>
     </div>
+
+    <dialog id="pin-dialog" class="pin-dialog">
+      <form method="dialog" id="pin-form" class="pin-form">
+        <h2>Certificate PIN</h2>
+        <p>
+          Enter the PIN for
+          <strong id="pin-cert-name">selected certificate</strong> to apply a
+          digital signature.
+        </p>
+        <label class="stack-label">
+          <span>PIN</span>
+          <input
+            id="pin-input"
+            type="password"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            maxlength="8"
+            placeholder="••••"
+            required
+          />
+        </label>
+        <p class="inline-note warn" id="pin-error" hidden>
+          Invalid PIN. Demo PINs are listed under each certificate.
+        </p>
+        <div class="dialog-actions">
+          <button type="submit" class="btn primary" value="confirm">
+            Apply signature
+          </button>
+          <button type="submit" class="btn ghost" value="cancel">Cancel</button>
+        </div>
+      </form>
+    </dialog>
+
     <script src="app.js"></script>
   </body>
 </html>
