@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NAVOPS — Command Routing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="top-bar">
+        <div class="brand-block">
+          <div class="brand-mark" aria-hidden="true"></div>
+          <div class="brand-text">
+            <p class="brand-name">NAVOPS</p>
+            <p class="brand-sub">Command Routing &amp; Form Tracking</p>
+          </div>
+        </div>
+        <div class="unit-meta">
+          <span class="meta-chip">USS DECISIVE · DDG-81</span>
+          <span class="meta-chip soft">UNCLASSIFIED // SAMPLE DATA</span>
+        </div>
+      </header>
+
+      <nav class="tab-bar" role="tablist" aria-label="Primary views">
+        <button
+          class="tab active"
+          role="tab"
+          id="tab-dashboard"
+          aria-selected="true"
+          aria-controls="view-dashboard"
+          data-view="dashboard"
+        >
+          Commanding Officer Dashboard
+        </button>
+        <button
+          class="tab"
+          role="tab"
+          id="tab-routing"
+          aria-selected="false"
+          aria-controls="view-routing"
+          data-view="routing"
+        >
+          Routing Chain
+        </button>
+      </nav>
+
+      <main>
+        <section
+          id="view-dashboard"
+          class="view active"
+          role="tabpanel"
+          aria-labelledby="tab-dashboard"
+        >
+          <div class="view-header">
+            <div>
+              <h1>Pending Forms</h1>
+              <p class="view-lede">
+                Forms awaiting action in the command routing chain.
+              </p>
+            </div>
+            <div class="summary-strip" id="summary-strip"></div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="forms-table" aria-label="Pending forms">
+              <thead>
+                <tr>
+                  <th scope="col">Form Type</th>
+                  <th scope="col">Originator</th>
+                  <th scope="col">Date Submitted</th>
+                  <th scope="col">Priority</th>
+                  <th scope="col">Days Aging</th>
+                </tr>
+              </thead>
+              <tbody id="forms-tbody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section
+          id="view-routing"
+          class="view"
+          role="tabpanel"
+          aria-labelledby="tab-routing"
+          hidden
+        >
+          <div class="view-header">
+            <div>
+              <h1>Digital Routing Chain</h1>
+              <p class="view-lede">
+                Certificate signatures across the command endorsement path.
+              </p>
+            </div>
+            <label class="form-select-wrap">
+              <span>Active package</span>
+              <select id="package-select" aria-label="Select routing package"></select>
+            </label>
+          </div>
+
+          <div class="package-banner" id="package-banner"></div>
+
+          <ol class="stepper" id="stepper" aria-label="Routing stages"></ol>
+
+          <p class="stepper-note">
+            Check a stage to apply a digital certificate signature. Status updates
+            immediately for this sample session.
+          </p>
+        </section>
+      </main>
+
+      <footer class="app-footer">
+        <span>NAVOPS Command Suite · Demo Environment</span>
+        <span>Sample data only — not for operational use</span>
+      </footer>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
