@@ -399,20 +399,47 @@ function renderRoleSelect() {
   ).join("");
 }
 
+function isAwaitingReviewer(pkg, role) {
+  return (
+    pkg.status === "routing" &&
+    pkg.chain[pkg.currentStageIndex] === role
+  );
+}
+
+function packagesForCurrentDashboard() {
+  if (currentRole === "submitter") {
+    // Submitters use My Inbox for returns/PDFs; queue stays clear of reviewer traffic.
+    return [];
+  }
+  return packages.filter((pkg) => isAwaitingReviewer(pkg, currentRole));
+}
+
+function renderDashboardHeader() {
+  const title = document.getElementById("dashboard-title");
+  const lede = document.getElementById("dashboard-lede");
+  if (currentRole === "submitter") {
+    title.textContent = "My Queue";
+    lede.textContent =
+      "Reviewer queues are role-filtered. As submitter, use My Inbox for returns and signed PDFs.";
+    return;
+  }
+  title.textContent = `My Queue — ${currentRole}`;
+  lede.textContent = `Only packages currently waiting on ${currentRole} are shown. Other stages stay hidden until the form reaches them.`;
+}
+
 function renderSummary() {
   const strip = document.getElementById("summary-strip");
-  const active = packages.filter((p) => p.status !== "complete");
-  const urgent = active.filter((f) => f.priority === "Urgent").length;
-  const returned = packages.filter((p) => p.status === "returned").length;
-  const oldest = Math.max(
-    0,
-    ...active.map((f) => daysBetween(f.dateSubmitted))
-  );
+  const queue = packagesForCurrentDashboard();
+  const urgent = queue.filter((f) => f.priority === "Urgent").length;
+  const priority = queue.filter((f) => f.priority === "Priority").length;
+  const oldest = queue.length
+    ? Math.max(...queue.map((f) => daysBetween(f.dateSubmitted)))
+    : 0;
 
   strip.innerHTML = [
-    { label: "In routing", value: active.length },
+    { label: "Awaiting you", value: queue.length },
     { label: "Urgent", value: urgent },
-    { label: "Returned", value: returned },
+    { label: "Priority", value: priority },
     { label: "Oldest (days)", value: oldest },
   ]
     .map(
@@ -426,21 +453,31 @@ function renderSummary() {
 }
 
 function renderFormsTable() {
+  renderDashboardHeader();
   const tbody = document.getElementById("forms-tbody");
-  const sorted = [...packages].sort(
+  const empty = document.getElementById("dashboard-empty");
+  const tableWrap = tbody.closest(".table-wrap");
+  const queue = packagesForCurrentDashboard().sort(
     (a, b) => daysBetween(b.dateSubmitted) - daysBetween(a.dateSubmitted)
   );
 
-  tbody.innerHTML = sorted
+  if (!queue.length) {
+    tbody.innerHTML = "";
+    tableWrap.hidden = true;
+    empty.hidden = false;
+    empty.textContent =
+      currentRole === "submitter"
+        ? "No reviewer queue for the submitter role. Switch Acting as to a chain stage to see that reviewer’s forms, or open My Inbox for your returns and signed PDFs."
+        : `No packages are waiting on ${currentRole} right now.`;
+    return;
+  }
+
+  tableWrap.hidden = false;
+  empty.hidden = true;
+  tbody.innerHTML = queue
     .map((form) => {
       const days = daysBetween(form.dateSubmitted);
       const priorityClass = PRIORITY_CLASS[form.priority];
-      const statusClass =
-        form.status === "returned"
-          ? "status-returned"
-          : form.status === "complete"
-            ? "status-complete"
-            : "status-routing";
       return `
         <tr>
           <td>
@@ -458,7 +495,7 @@ function renderFormsTable() {
           <td>
             <span class="aging ${agingClass(days)}">${days}</span>
           </td>
-          <td><span class="status-pill ${statusClass}">${statusLabel(form)}</span></td>
+          <td><span class="status-pill status-routing">${statusLabel(form)}</span></td>
           <td>
             <button type="button" class="btn compact" data-open="${form.id}">
               Open
@@ -1416,6 +1453,8 @@ function setupWorkspace() {
 function setupRole() {
   document.getElementById("role-select").addEventListener("change", (event) => {
     currentRole = event.target.value;
+    renderSummary();
+    renderFormsTable();
     renderWorkspace();
   });
 }

@@ -85,17 +85,16 @@
         >
           <div class="view-header">
             <div>
-              <h1>Pending Forms</h1>
-              <p class="view-lede">
-                Open a package to review checklists, apply a digital certificate
-                signature, or return it to the submitter.
+              <h1 id="dashboard-title">My Queue</h1>
+              <p class="view-lede" id="dashboard-lede">
+                Only packages waiting on your review stage appear here.
               </p>
             </div>
             <div class="summary-strip" id="summary-strip"></div>
           </div>
 
           <div class="table-wrap">
-            <table class="forms-table" aria-label="Pending forms">
+            <table class="forms-table" aria-label="Forms awaiting your action">
               <thead>
                 <tr>
                   <th scope="col">Form Type</th>
@@ -110,6 +109,7 @@
               <tbody id="forms-tbody"></tbody>
             </table>
           </div>
+          <div id="dashboard-empty" class="empty-state" hidden></div>
         </section>
 
         <section
